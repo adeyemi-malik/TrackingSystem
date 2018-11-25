@@ -1,0 +1,33 @@
+﻿@model IEnumerable<Mints.Models.ApiModels.LocationViewModel>
+
+@{
+    ViewData["Title"] = "Home Page";
+}
+
+<div class="row">
+    <h2>Animal Location Records</h2>
+
+    <table class="table table-bordered table-responsive">
+        <thead>
+            <tr>
+                <th>AnimalId</th>
+                <th>TrackerId</th>
+                <th>Longitude</th>
+                <th>Latitude</th>
+                <th>DateAdded</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+            <tr>
+                <td>@item.Animal</td>
+                <td>@item.Tracker</td>
+                <td>@item.Longitude</td>
+                <td>@item.Latitude</td>
+                <td>@item.Date</td>
+            </tr>               
+            }
+        </tbody>
+    </table>
+</div>
