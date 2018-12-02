@@ -18,24 +18,41 @@ namespace Mints.Controllers
     {      
         private readonly IFarmerRepository _farmerRepository;
         private readonly ILocationRepository _locationRepository;
+        private readonly IApiClientRepository _apiClientRepository;
 
-        public LocationController(IFarmerRepository farmerRepository, ILocationRepository locationRepository)
+
+        public LocationController(IFarmerRepository farmerRepository, ILocationRepository locationRepository, IApiClientRepository apiClientRepository)
         {           
             _farmerRepository = farmerRepository;
             _locationRepository = locationRepository;
+            _apiClientRepository = apiClientRepository;
         }
 
-        [HttpPost]
-        public async Task<IActionResult> Save([FromBody]SaveLocationViewModel model)
+        [HttpGet]
+        [ProducesResponseType(400, Type = typeof(ErrorModel))]
+        public async Task<IActionResult> Save([FromQuery]SaveLocationViewModel model)
         {
-            var location = new Location {
-                Latitude = model.Latitude,
-                Longitude = model.Longitude,
-                Tracker = new Tracker { Tag = model.TrackerId}
-            };
+            try
+            {
+                if(await _apiClientRepository.Exists(model.ApiKey))
+                {
+                    var location = new Location
+                    {
+                        Latitude = model.Latitude,
+                        Longitude = model.Longitude,
+                        Tracker = new Tracker { Tag = model.TrackerId }
+                    };
 
-            await _locationRepository.SaveLocation(location);
-            return Ok();
+                    await _locationRepository.SaveLocation(location);
+
+                    return Ok(new { status = "success", message = "location successfully saved" });
+                }
+                return BadRequest(new ErrorModel { Status = "error", Message = "invalid api key" });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new ErrorModel { Status = "error", Message = ex.Message });
+            }
         }
 
         [HttpGet]

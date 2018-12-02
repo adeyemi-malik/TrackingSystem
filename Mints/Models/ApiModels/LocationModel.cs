@@ -16,6 +16,9 @@ namespace Mints.Models.ApiModels
 
         [Required]
         public string TrackerId { get; set; }
+
+        [Required]
+        public string ApiKey { get; set; }
     }
 
     public class FilterLocationViewModel
